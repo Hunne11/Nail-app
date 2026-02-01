@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#d63384">
+    <title>Bunny Nail Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #d63384; --bg: #fff5f8; --success: #28a745; --text: #333; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: var(--bg); margin: 0; padding: 0; color: var(--text);
+            padding-bottom: 70px; /* Chừa chỗ cho menu dưới */
+        }
+
+        /* DASHBOARD & NAVIGATION */
+        .page { display: none; padding: 15px; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+        .quest-card { 
+            background: white; padding: 25px 10px; border-radius: 20px; text-align: center; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); cursor: pointer;
+        }
+        .quest-card i { font-size: 2rem; color: var(--primary); margin-bottom: 10px; display: block; }
+        .quest-card span { font-weight: bold; font-size: 0.9rem; }
+
+        .bottom-nav { 
+            position: fixed; bottom: 0; width: 100%; background: white; 
+            display: flex; justify-content: space-around; padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05); border-top-left-radius: 20px; border-top-right-radius: 20px;
+        }
+        .nav-item { color: #ccc; text-align: center; font-size: 0.7rem; flex: 1; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+
+        /* GIỮ NGUYÊN STYLE CŨ CỦA BẠN */
+        .container { display: flex; flex-direction: column; gap: 15px; max-width: 1200px; margin: 0 auto; }
+        @media (min-width: 768px) { .container { flex-direction: row; padding: 20px; } .card { flex: 1; } }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h2 { color: var(--primary); margin-top: 0; font-size: 1.2rem; border-bottom: 2px solid var(--bg); padding-bottom: 10px; }
+        label { font-size: 0.85rem; font-weight: bold; color: #666; margin: 10px 0 5px; display: block; }
+        .select-box, input { width: 100%; padding: 12px; border: 2px solid #f0f0f0; border-radius: 10px; font-size: 16px; outline: none; margin-bottom: 10px; }
+        .select-box:focus, input:focus { border-color: var(--primary); }
+        .row { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-add { background: var(--primary); color: white; border: none; border-radius: 10px; padding: 15px; font-weight: bold; width: 100%; cursor: pointer; font-size: 1rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; font-size: 0.75rem; color: #aaa; padding: 10px; border-bottom: 1px solid #eee; }
+        td { padding: 12px 10px; border-bottom: 1px solid #f9f9f9; font-size: 0.95rem; }
+        .total-box { background: var(--success); color: white; padding: 15px; border-radius: 12px; margin-top: 20px; display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: bold; }
+        .remove-btn { color: #ff4d4d; border: none; background: none; font-size: 1.2rem; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div id="page-dashboard" class="page active">
+        <div style="text-align: center; padding: 20px;">
+            <img src="logo.png" style="width: 80px; height: 80px; border-radius: 20px; margin-bottom: 10px;" alt="Logo">
+            <h1 style="color: var(--primary); margin: 0; font-size: 1.5rem;">Bunny Nail Pro</h1>
+        </div>
+        <div class="dashboard-grid">
+            <div class="quest-card" onclick="openTab('page-calculator')">
+                <i class="fas fa-calculator"></i>
+                <span>Tính Bill</span>
+            </div>
+            <div class="quest-card" onclick="alert('Tính năng đang phát triển!')">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Lịch Hẹn</span>
+            </div>
+            <div class="quest-card" onclick="alert('Tính năng đang phát triển!')">
+                <i class="fas fa-users"></i>
+                <span>Khách Hàng</span>
+            </div>
+            <div class="quest-card" onclick="openTab('page-settings')">
+                <i class="fas fa-cog"></i>
+                <span>Cài Đặt</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-calculator" class="page">
+        <div class="container">
+            <div class="card">
+                <h2>Bunny Nail Menu</h2>
+                <label>1. NHÓM CHÍNH</label>
+                <select id="parent-select" class="select-box" onchange="updateSubMenu()">
+                    <option value="">-- Chọn Nhóm --</option>
+                    <option value="son">SƠN MÓNG</option>
+                    <option value="cham_soc">CHĂM SÓC</option>
+                    <option value="trang_tri">TRANG TRÍ</option>
+                    <option value="khac">GHI THÊM / KHÁC</option>
+                </select>
+                <label>2. CHI TIẾT</label>
+                <select id="main-select" class="select-box" onchange="autoFillPrice()">
+                    <option value="">-- Chọn chi tiết --</option>
+                </select>
+                <div class="row">
+                    <input type="text" id="custom-name" placeholder="Tên dịch vụ...">
+                    <input type="number" id="custom-price" style="width: 100px;" placeholder="Giá (K)">
+                </div>
+                <button class="btn-add" onclick="addItem()">THÊM VÀO BILL</button>
+                <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 10px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <span style="font-size: 0.9rem;">Tiền công (K):</span>
+                        <input type="number" id="fee-cong" value="" oninput="calculate()" style="width:80px; margin:0;">
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size: 0.9rem;">Xăng xe (K):</span>
+                        <input type="number" id="fee-xang" value="" oninput="calculate()" style="width:80px; margin:0;">
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <h2>Hóa Đơn Chi Tiết</h2>
+                <table>
+                    <thead><tr><th>DỊCH VỤ</th><th style="text-align: center;">SL</th><th style="text-align: right;">GIÁ</th><th></th></tr></thead>
+                    <tbody id="bill-body"></tbody>
+                </table>
+                <div class="total-box"><span>TỔNG:</span><span id="total-price">0đ</span></div>
+                <button onclick="clearAll()" style="margin-top:15px; background:none; border:1px solid #ccc; width:100%; padding:10px; border-radius:10px; color:#999; cursor:pointer;">Xóa hóa đơn mới</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-settings" class="page">
+        <div class="card">
+            <h2>Cài đặt</h2>
+            <p>Phiên bản ứng dụng: 1.0.0</p>
+            <button onclick="localStorage.clear(); location.reload();" style="color: red; border: 1px solid red; padding: 10px; border-radius: 10px; background: none;">Xóa bộ nhớ tạm</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="openTab('page-dashboard')"><i class="fas fa-th-large"></i><span>Home</span></div>
+        <div class="nav-item" onclick="openTab('page-calculator')"><i class="fas fa-calculator"></i><span>Tính Bill</span></div>
+        <div class="nav-item" onclick="openTab('page-settings')"><i class="fas fa-cog"></i><span>Cài Đặt</span></div>
+    </div>
+
+<script>
+    // CHUYỂN TAB
+    function openTab(tabId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(n => {
+            n.classList.remove('active');
+            if(n.innerText.toLowerCase().includes(tabId.split('-')[1])) n.classList.add('active');
+        });
+    }
+
+    // GIỮ NGUYÊN LOGIC CŨ CỦA BẠN
+    const serviceData = {
+        'son': [{n:'Sơn Gel Tay',p:100},{n:'Sơn Gel Chân',p:90},{n:'Sơn Thạch',p:120},{n:'Úp Móng Tay',p:50},{n:'Úp Móng Chân',p:30},{n:'Tráng Gương, Omber, French',p:150},{n:'Mắt Mèo',p:150}],
+        'cham_soc': [{n:'Sơn Cứng Móng',p:50},{n:'Cắt Da Tay / Chân',p:30},{n:'Phá Gel',p:20},],
+        'trang_tri': [{n:'Vẽ Nét',p:15},{n:'Đính Đá Lớn',p:10},{n:'Kim Tuyến',p:5},{n:'Ẩn xà cừ',p:10},{n:'French',p:5},{n:'Tráng Gương',p:5},{n:'Loang',p:5},{n:'Omber',p:5},{n:'Gel Lặn',p:15}]
+    };
+
+    let basket = {};
+
+    function getExtraServices() { return JSON.parse(localStorage.getItem('bunny_extras')) || []; }
+
+    function updateSubMenu() {
+        const parentVal = document.getElementById('parent-select').value;
+        const subSelect = document.getElementById('main-select');
+        subSelect.innerHTML = '<option value="">-- Chọn chi tiết --</option>';
+        let list = serviceData[parentVal] || [];
+        if(parentVal === 'khac') list = getExtraServices();
+        list.forEach(item => {
+            let opt = document.createElement('option');
+            opt.value = item.n;
+            opt.text = `${item.n} - ${item.p}K`;
+            opt.setAttribute('data-price', item.p);
+            subSelect.appendChild(opt);
+        });
+    }
+
+    function autoFillPrice() {
+        const select = document.getElementById('main-select');
+        const opt = select.options[select.selectedIndex];
+        if (opt.value) {
+            document.getElementById('custom-name').value = opt.value;
+            document.getElementById('custom-price').value = opt.getAttribute('data-price');
+        }
+    }
+
+    function addItem() {
+        const nameInp = document.getElementById('custom-name');
+        const priceInp = document.getElementById('custom-price');
+        const parentVal = document.getElementById('parent-select').value;
+        let name = nameInp.value.trim();
+        let price = parseInt(priceInp.value);
+        if (!name || isNaN(price)) return alert("Vui lòng nhập đủ!");
+        if(parentVal === 'khac') {
+            let extras = getExtraServices();
+            if(!extras.find(x => x.n === name)) {
+                extras.push({n: name, p: price});
+                localStorage.setItem('bunny_extras', JSON.stringify(extras));
+            }
+        }
+        basket[name] = basket[name] ? {price, qty: basket[name].qty + 1} : {price, qty: 1};
+        renderBill();
+    }
+
+    function renderBill() {
+        const body = document.getElementById('bill-body');
+        body.innerHTML = "";
+        let sub = 0;
+        for (let n in basket) {
+            let item = basket[n];
+            sub += item.price * item.qty;
+            body.innerHTML += `<tr><td>${n}</td><td align="center">x${item.qty}</td><td align="right">${item.price*item.qty}k</td><td align="right"><button class="remove-btn" onclick="removeItem('${n}')">✕</button></td></tr>`;
+        }
+        calculate(sub);
+    }
+
+    function removeItem(n) { delete basket[n]; renderBill(); }
+    function clearAll() { if(confirm("Xóa toàn bộ hóa đơn?")) { basket = {}; renderBill(); } }
+
+    function calculate(sub = null) {
+        if (sub === null) {
+            sub = 0;
+            for (let n in basket) sub += basket[n].price * basket[n].qty;
+        }
+        const c = parseInt(document.getElementById('fee-cong').value) || 0;
+        const x = parseInt(document.getElementById('fee-xang').value) || 0;
+        document.getElementById('total-price').innerText = ((sub + c + x) * 1000).toLocaleString('vi-VN') + "đ";
+    }
+</script>
+</body>
+</html>
